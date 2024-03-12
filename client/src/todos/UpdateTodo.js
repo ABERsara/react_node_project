@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
+import React,{ useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const UpdateTodo = ({ _id, onUpdate, fetchTodos }) => {
-    const [values, setValues] = useState({
-        _id,
+   const {id}=useParams();
+  const [values, setValues] = useState({
+        _id:"",
         title: "",
     tags: [],
     completed: false,
@@ -13,13 +16,15 @@ const UpdateTodo = ({ _id, onUpdate, fetchTodos }) => {
     useEffect(() => {
         const fetchTodoData = async () => {
           try {
-            const { data } = await axios.get(`http://localhost:7003/api/todos/${_id}`);
-            const { title,tags,completed} = data;
+            const { data } = await axios.get(`http://localhost:7003/api/todos/${id}`);
+            // const { title,tags,completed} = data;
             setValues({
               ...values,
-              title: title || "",
-              tags: tags || "",
-              completed: completed || ""
+              ...data,
+              _id:id
+              // title: title || "",
+              // tags: tags || [],
+              // completed: completed || false
             });
           } catch (error) {
             console.error('Error fetching todo:', error);
@@ -27,12 +32,12 @@ const UpdateTodo = ({ _id, onUpdate, fetchTodos }) => {
         };
         fetchTodoData();
       console.log(values)
-      }, [_id]);
+      }, []);
       
    // ביצוע פעולות בעת שינוי בערך של הניווט
-   useEffect(() => {
-    navigate("/todos");
-  }, [navigate]);
+  //  useEffect(() => {
+  //   navigate("/todos");
+  // }, [navigate]);
 
     const changeInput = (event) => {
         const { name, value, type, checked } = event.target;
@@ -52,9 +57,9 @@ const UpdateTodo = ({ _id, onUpdate, fetchTodos }) => {
       }
     const handleUpdate = async (e) => {
         e.preventDefault();
-        if (!values._id || !values.title ) {
-            return;
-        }
+        // if (!values._id || !values.title ) {
+        //     return;
+        // }
         try {
             const { data } = await axios.put(`http://localhost:7003/api/todos/`, values);
             console.log(data);
@@ -62,11 +67,13 @@ const UpdateTodo = ({ _id, onUpdate, fetchTodos }) => {
                 title: "",
             tags: [],
             completed: false,})
-            onUpdate(_id)
-            fetchTodos()
+            // onUpdate(_id)
+            // fetchTodos()
+             // Navigate to the updated user's details page
+             navigate(`/todos`);
         } catch (error) {
             // Handle errors
-            console.error("Error creating todo:", error);
+            console.error("Error updating todo:", error);
         }
     };
     return (
@@ -92,13 +99,11 @@ const UpdateTodo = ({ _id, onUpdate, fetchTodos }) => {
           onChange={changeInput}
         />
         <label htmlFor="completed">Completed</label>
-        <button
-          className="button saveButton"
-          type="submit"
-          disabled={!values.title}>
-          Send
-        </button>
-      </div>
+        <div className="buttons-form">
+        <button className="button saveButton" type="submit"  >Save</button>
+          <button className="button goBackButton"><Link to="/todos"><FontAwesomeIcon icon={faRightFromBracket} /></Link></button> 
+           </div>
+            </div>
     </form>
     );
 };

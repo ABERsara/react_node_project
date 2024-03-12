@@ -3,14 +3,17 @@ import React, { useState, useEffect } from "react";
 import Axios from "axios";
 import PhotoItem from "./PhotoItem";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faListCheck, faRotateLeft, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faListCheck} from '@fortawesome/free-solid-svg-icons'
 import AddPhoto from "./AddPhoto";
+import { Outlet, useLocation } from 'react-router-dom';
 // import GetPhotoById from "./GetPhotoById";
 const PhotosList = () => {
+  const location = useLocation()
+
   // Search input state for filtering users by id, name, email, or phone
   //   const [requestName, setRequestName] = useState("id")
   const [photos, setPhotos] = useState([])
-  const [filteredPhotos, setFilteredPhotos] = useState([])
+  // const [filteredPhotos, setFilteredPhotos] = useState([])
   //   const [id, setId] = useState("")
   const [requestAdd, setRequestAdd] = useState(false)
   // const [searchInput, setSearchInput] = useState("")
@@ -83,17 +86,17 @@ const PhotosList = () => {
     console.log(e.target.value)
     const sort = e.target.value
     if (sort === "title" || sort === "category") {
-      setFilteredPhotos([...photos].sort((a, b) => a[sort].localeCompare(b[sort])))
+      setPhotos([...photos].sort((a, b) => a[sort].localeCompare(b[sort])))
     } else if (sort === "date") {
-      setFilteredPhotos([...photos].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)))
+      setPhotos([...photos].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)))
     } else {
-      setFilteredPhotos([...photos].sort((a, b) => a.id - b.id))
+      setPhotos([...photos].sort((a, b) => a.id - b.id))
     }
   }
   // Fetch users on component mount
   useEffect(() => {
     fetchPhotos();
-  }, []);
+  }, [location]);
 
   // If no photos are available, display loading message and "Add Photo" button
   if (photos.length === 0) {
@@ -109,6 +112,7 @@ const PhotosList = () => {
   return (
     //Once photos are loaded, it displays the list of photos or the filtered photos based on the search criteria.
     <div className="usersList">
+      <Outlet/>
       <button className="buttonAdd" onClick={() => setRequestAdd(true)}>
         <FontAwesomeIcon icon={faListCheck} />
         <FontAwesomeIcon icon={faPlus} />
@@ -124,17 +128,16 @@ const PhotosList = () => {
       {/* If the search criteria is set to "id" and an ID is provided, it displays details for the photo with that ID using the GetUserById component. */}
       {/* {*/}
       <select className="sortBy" onChange={handleSort}>
-        <option value="id">id</option>
-        <option value="title">title</option>
-        <option value="date">date</option>
-        <option value="category">category</option>
+        <option value="title">sort by title</option>
+        <option value="date">sort by date</option>
+        <option value="category">sort by category</option>
       </select>
-      {(filteredPhotos.length > 0
-        ? filteredPhotos.map((photo, index) => (<PhotoItem key={index} photo={photo} fetchPhotos={fetchPhotos} />))
-        : photos.map((photo, index) => (<PhotoItem key={index} photo={photo} fetchPhotos={fetchPhotos} />))
-      )}
+      {/* {(filteredPhotos.length > 0
+        ? filteredPhotos.map((photo, index) => (<PhotoItem key={index} photo={photo} fetchPhotos={fetchPhotos} />)) */}
+       {photos.map((photo, index) => (<PhotoItem key={index} photo={photo} fetchPhotos={fetchPhotos} />))}
+
       {/* If there is an error message (err is not empty), it displays the error message and a "Return" button to clear the error and filtered photos. */}
-      <div className="errors">{err}</div> {err && <button className="button buttonReturn" onClick={onReturn}><FontAwesomeIcon icon={faRotateLeft} id="fa" /></button>}
+      {/* <div className="errors">{err}</div> {err && <button className="button buttonReturn" onClick={onReturn}><FontAwesomeIcon icon={faRotateLeft} id="fa" /></button>} */}
     </div>
   );
 

@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
-const UpdateUser = ({ _id, onUpdate, fetchUsers }) => {
+import React,{ useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+const UpdateUser = () => {
+  const {id}=useParams();
     const [values, setValues] = useState({
-        _id,
+      _id:"",
         name: "",
         username: "",
         email: "",
@@ -15,28 +18,33 @@ const UpdateUser = ({ _id, onUpdate, fetchUsers }) => {
     useEffect(() => {
         const fetchUserData = async () => {
           try {
-            const { data } = await axios.get(`http://localhost:7003/api/users/${_id}`);
-            const { name, username, email, address, phone } = data;
+            const { data } = await axios.get(`http://localhost:7003/api/users/${id}`);
+            //  const { name } = data;
+            // console.log(`receives user:${name }, ${id}`)
             setValues({
               ...values,
-              name: name || "",
-              username: username || "",
-              email: email || "",
-              address: address || "",
-              phone: phone || ""
+              ...data,
+              _id:id
+              // name: data.name || "",
+              // username: username || "",
+              // email: email || "",
+              // address: address || "",
+              // phone: phone || ""
             });
+            console.log(`receives set values user:${values.name },${values._id} `)
+
           } catch (error) {
             console.error('Error fetching user:', error);
           }
         };
         fetchUserData();
       console.log(values)
-      }, [_id]);
+      }, []);
       
    // ביצוע פעולות בעת שינוי בערך של הניווט
-   useEffect(() => {
-    navigate("/users");
-  }, [navigate]);
+//    useEffect(() => {
+//     navigate("/users");
+//   }, [navigate]);
 
     const changeInput = (event) => {
         const { name, value } = event.target;
@@ -44,25 +52,29 @@ const UpdateUser = ({ _id, onUpdate, fetchUsers }) => {
       }
     const handleUpdate = async (e) => {
         e.preventDefault();
-        if (!values._id || !values.name || !values.username) {
+        if (!values._id|| !values.name || !values.username) {
             return;
         }
         try {
-            const { data } = await axios.put(`http://localhost:7003/api/users/`, values);
-            console.log(data);
-            setValues({ _id,
-                name: "",
-                username: "",
-                email: "",
-                address: "",
-                phone: ""})
-            onUpdate(_id)
-            fetchUsers()
-        } catch (error) {
-            // Handle errors
-            console.error("Error creating user:", error);
-        }
-    };
+          
+            const { data } = await axios.put(`http://localhost:7003/api/users`,  values);
+            console.log(`put user ${data}`);
+            setValues({
+              _id: "",
+              name: "",
+              username: "",
+              email: "",
+              address: "",
+              phone: ""
+            });
+        
+            // Navigate to the updated user's details page
+            navigate(`/users`);
+          } catch (error) {
+            console.error("Error updating user:", error);
+          }
+        };
+    //הצגת הקומפוננטה
     return (
         <form onSubmit={handleUpdate} className="form">
             <div className="form-input">
@@ -94,7 +106,10 @@ const UpdateUser = ({ _id, onUpdate, fetchUsers }) => {
                 name="address"
                 placeholder="Please insert your address"
                 onChange={changeInput} />
-            <button className="button saveButton"type="submit" disabled={!values.name || !values.username} >Save</button>
+                <div className="buttons-form">
+            <button className="button saveButton" type="submit"  >Save</button>
+           <button className="button goBackButton"><Link to="/users"><FontAwesomeIcon icon={faRightFromBracket} /></Link></button>
+           </div>
             </div>
         </form>
     );

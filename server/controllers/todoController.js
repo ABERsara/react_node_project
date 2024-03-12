@@ -26,6 +26,7 @@ const getTodoById = async (req, res) => {
 }
 
 const createNewTodo = async (req, res) => {
+
     const { title, tags, completed } = req.body
     //confirm data!
     if (!title) {
@@ -44,23 +45,34 @@ const createNewTodo = async (req, res) => {
 //update a todo
 //becuse of the changes, we need a exec object , not lean
 const updateTodo = async (req, res) => {
-    const { _id, title, tags, completed } = req.body
-    //Confirm data
+    const { _id, title, tags, completed } = req.body;
+
+    // Confirm data
     if (!_id || !title) {
-        return res.status(400).json({ message: "Fields are required" })
+        return res.status(400).json({ message: "Fields are required" });
     }
-    //confirm todo existed to update 
-    const todo = await Todo.findById(_id).exec()
+
+    // Confirm todo exists to update
+    const todo = await Todo.findById(_id).exec();
+
     if (!todo) {
-        return res.status(400).json({ message: "Todo not found" })
+        return res.status(400).json({ message: "Todo not found" });
     }
-    todo.title = title
-    todo.tags = tags
-    todo.completed = completed
-    //save the changes
-    const updatedTodo = await todo.save()
-    res.json(`${updatedTodo.name} updated`)
-}
+
+    // Validate and ensure completed is a Boolean
+    if (completed !== undefined && typeof completed !== "boolean") {
+        return res.status(400).json({ message: "Invalid 'completed' value" });
+    }
+
+    // Assign values
+    todo.title = title;
+    todo.tags = tags;
+    todo.completed = completed;
+
+    // Save the changes
+    const updatedTodo = await todo.save();
+    res.json(`${updatedTodo.name} updated`);
+};
 const updateTodoCompleted = async (req, res) => {
     const { id } = req.params
     //Confirm data
@@ -70,9 +82,10 @@ const updateTodoCompleted = async (req, res) => {
     }
     //change to completed
     todo.completed = !todo.completed
+    console.log("completed updated")
     //save the changes
     const updatedTodo = await todo.save()
-    res.json(`${updatedTodo.title} updated`)
+    res.json(`${updatedTodo.title} updated completed ${todo.completed}`)
 
 }
 //delete a todo

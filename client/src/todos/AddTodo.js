@@ -1,7 +1,12 @@
 import axios from "axios";
 import { useState } from "react";
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate} from 'react-router-dom'; 
 
 const AddTodo = ({ fetchTodos, onAdd }) => {
+  //Create a variable using useNavigate
+  const navigate = useNavigate(); 
   const [values, setValues] = useState({
     title: "",
     tags: [],
@@ -23,7 +28,10 @@ const AddTodo = ({ fetchTodos, onAdd }) => {
 
     console.log(values);
   };
-
+  const handleGoBack = () => {
+    // This will go back one step in the navigation history
+    navigate(-1);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!values.title) {
@@ -71,6 +79,7 @@ const AddTodo = ({ fetchTodos, onAdd }) => {
           onChange={changeInput}
         />
         <label htmlFor="completed">Completed</label>
+        <div className="buttons-form">
         <button
           className="button saveButton"
           type="submit"
@@ -78,6 +87,14 @@ const AddTodo = ({ fetchTodos, onAdd }) => {
         >
           Send
         </button>
+        <button
+        type="button"  // Set the type to button to prevent form submission
+        className="button goBackButton"
+        onClick={handleGoBack}
+      >
+         <FontAwesomeIcon icon={faRightFromBracket} />
+      </button>
+      </div>
       </div>
     </form>
   );

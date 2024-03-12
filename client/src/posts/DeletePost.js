@@ -1,8 +1,12 @@
 import axios from "axios";
 import React from "react";
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faTrash,faXmark} from '@fortawesome/free-solid-svg-icons'
+import {faTrash,faXmark,faRightFromBracket} from '@fortawesome/free-solid-svg-icons'
+import { useNavigate} from 'react-router-dom'; 
+
 const DeletePost = ({ id, onDelete,fetchPosts }) => {
+    const navigate=useNavigate();
+
     const handleDelete = async (e) => {
         e.preventDefault();
         try {
@@ -27,10 +31,20 @@ const DeletePost = ({ id, onDelete,fetchPosts }) => {
         }
         onDelete(id);
     };
-   
-    return (
+    const handleGoBack = () => {
+        // This will go back one step in the navigation history
+        navigate(-1);
+      };
+    return (<>
         <button className="delConfirm"onClick={handleDelete}><FontAwesomeIcon icon={faTrash} id="fa"/><FontAwesomeIcon icon={faXmark} id="fa"/></button>
-    );
+        <button
+        type="button"  // Set the type to button to prevent form submission
+        className="button"
+        onClick={handleGoBack}
+      >
+         <FontAwesomeIcon icon={faRightFromBracket} />
+      </button></>
+        );
 };
 
 export default DeletePost;

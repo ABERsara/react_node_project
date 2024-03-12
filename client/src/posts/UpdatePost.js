@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
-const UpdatePost = ({ _id, onUpdate, fetchPosts }) => {
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+const UpdatePost = () => {
+  const {id}=useParams();
     const [values, setValues] = useState({
-        _id,
+        _id:"",
         title: "",
    body:""
     })
@@ -12,12 +15,14 @@ const UpdatePost = ({ _id, onUpdate, fetchPosts }) => {
     useEffect(() => {
         const fetchPostData = async () => {
           try {
-            const { data } = await axios.get(`http://localhost:7003/api/posts/${_id}`);
-            const { title,body} = data;
+            const { data } = await axios.get(`http://localhost:7003/api/posts/${id}`);
+            // const { title,body} = data;
             setValues({
               ...values,
-              title: title || "",
-             body: body||""
+              ...data,
+              _id:id
+            //   title: title || "",
+            //  body: body||""
             });
           } catch (error) {
             console.error('Error fetching post:', error);
@@ -25,12 +30,12 @@ const UpdatePost = ({ _id, onUpdate, fetchPosts }) => {
         };
         fetchPostData();
       console.log(values)
-      }, [_id]);
+      }, []);
       
    // ביצוע פעולות בעת שינוי בערך של הניווט
-   useEffect(() => {
-    navigate("/posts");
-  }, [navigate]);
+  //  useEffect(() => {
+  //   navigate("/posts");
+  // }, [navigate]);
 
     const changeInput = (event) => {
         const { name, value } = event.target;
@@ -40,20 +45,20 @@ const UpdatePost = ({ _id, onUpdate, fetchPosts }) => {
       }
     const handleUpdate = async (e) => {
         e.preventDefault();
-        if (!values._id || !values.title ) {
-            return;
-        }
+        // if (!values._id || !values.title ) {
+        //     return;
+        // }
         try {
             const { data } = await axios.put(`http://localhost:7003/api/posts/`, values);
             console.log(data);
-            setValues({   _id,
+            setValues({   _id:"",
                 title: "",
             body:""})
-            onUpdate(_id)
-            fetchPosts()
+          // Navigate to the updated user's details page
+          navigate(`/posts`);
         } catch (error) {
             // Handle errors
-            console.error("Error creating post:", error);
+            console.error("Error updating post:", error);
         }
     };
     return (
@@ -72,6 +77,7 @@ const UpdatePost = ({ _id, onUpdate, fetchPosts }) => {
           placeholder="Please insert the body"
           onChange={changeInput}
         />
+         <div className="buttons-form">
         <button
           className="button saveButton"
           type="submit"
@@ -79,6 +85,8 @@ const UpdatePost = ({ _id, onUpdate, fetchPosts }) => {
         >
           Send
         </button>
+        <button className="button goBackButton"><Link to="/posts"><FontAwesomeIcon icon={faRightFromBracket} /></Link></button>
+      </div>
       </div>
     </form>
     );

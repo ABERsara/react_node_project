@@ -1,9 +1,12 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
-const UpdatePhoto = ({ _id, onUpdate, fetchPhotos }) => {
-    const [values, setValues] = useState({
-        _id,
+import React,{ useState, useEffect } from "react";
+import {  Link, useNavigate, useParams} from 'react-router-dom'; // יבוא של פונקציה useNavigate מהספרייה 'react-router-dom'
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+const UpdatePhoto = () => {
+  const {id}=useParams();  
+  const [values, setValues] = useState({
+        _id:"",
         title:"",
         imageUrl:"",
         category:""
@@ -13,13 +16,15 @@ const UpdatePhoto = ({ _id, onUpdate, fetchPhotos }) => {
     useEffect(() => {
         const fetchPhotoData = async () => {
           try {
-            const { data } = await axios.get(`http://localhost:7003/api/photos/${_id}`);
-            const { title,imageUrl,category} = data;
+            const { data } = await axios.get(`http://localhost:7003/api/photos/${id}`);
+            // const { title,imageUrl,category} = data;
             setValues({
               ...values,
-              title: title || "",
-              imageUrl:imageUrl||"",
-              category:category||""
+              ...data,
+              _id:id
+              // title: title || "",
+              // imageUrl:imageUrl||"",
+              // category:category||""
             });
           } catch (error) {
             console.error('Error fetching photo:', error);
@@ -27,12 +32,12 @@ const UpdatePhoto = ({ _id, onUpdate, fetchPhotos }) => {
         };
         fetchPhotoData();
       console.log(values)
-      }, [_id]);
+      }, []);
       
    // ביצוע פעולות בעת שינוי בערך של הניווט
-   useEffect(() => {
-    navigate("/photos");
-  }, [navigate]);
+  //  useEffect(() => {
+  //   navigate("/photos");
+  // }, [navigate]);
 
     const changeInput = (event) => {
         const { name, value } = event.target;
@@ -48,12 +53,13 @@ const UpdatePhoto = ({ _id, onUpdate, fetchPhotos }) => {
         try {
             const { data } = await axios.put(`http://localhost:7003/api/photos/`, values);
             console.log(data);
-            setValues({   _id,
+            setValues({   _id:"",
                 title:"",
         imageUrl:"",
         category:""})
-            onUpdate(_id)
-            fetchPhotos()
+        
+            // Navigate to the updated user's details page
+            navigate(`/photos`);
         } catch (error) {
             // Handle errors
             console.error("Error creating photo:", error);
@@ -81,6 +87,8 @@ const UpdatePhoto = ({ _id, onUpdate, fetchPhotos }) => {
           placeholder="Please insert the category"
           onChange={changeInput}
         />
+                        <div className="buttons-form">
+
         <button
           className="button saveButton"
           type="submit"
@@ -88,6 +96,9 @@ const UpdatePhoto = ({ _id, onUpdate, fetchPhotos }) => {
         >
           Send
         </button>
+        <button className="button goBackButton"><Link to="/photos"><FontAwesomeIcon icon={faRightFromBracket} /></Link></button>
+
+      </div>
       </div>
     </form>
     );

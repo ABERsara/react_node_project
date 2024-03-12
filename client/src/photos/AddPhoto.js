@@ -1,7 +1,13 @@
 import axios from "axios";
 import { useState } from "react";
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate} from 'react-router-dom'; 
+
 
 const AddPhoto = ({ fetchPhotos, onAdd }) => {
+  const navigate = useNavigate(); 
+
   const [values, setValues] = useState({
     title:"",
     imageUrl:"",
@@ -13,7 +19,10 @@ const AddPhoto = ({ fetchPhotos, onAdd }) => {
       setValues({ ...values, [name]: value });
     console.log(values);
   };
-
+  const handleGoBack = () => {
+    // This will go back one step in the navigation history
+    navigate(-1);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!values.title) {
@@ -60,6 +69,7 @@ const AddPhoto = ({ fetchPhotos, onAdd }) => {
           placeholder="Please insert the category"
           onChange={changeInput}
         />
+        <div className="buttons-form">
         <button
           className="button saveButton"
           type="submit"
@@ -67,6 +77,13 @@ const AddPhoto = ({ fetchPhotos, onAdd }) => {
         >
           Send
         </button>
+        <button
+        type="button"  // Set the type to button to prevent form submission
+        className="button goBackButton"
+        onClick={handleGoBack}>
+         <FontAwesomeIcon icon={faRightFromBracket} />
+      </button>
+        </div>
       </div>
     </form>
   );

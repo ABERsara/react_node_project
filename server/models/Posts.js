@@ -10,7 +10,6 @@ const postsSchema=new mongoose.Schema(//הגדרת הסכמה
     }
     },//פרמטר ראשון אוביקט של שדות 
     {timestamps:true}//פרמטר שני מאפיינים נוספים
-
 )
 
 //ייצוא
